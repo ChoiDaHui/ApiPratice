@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <select name="language" id="language">
+        <option value="en">영어</option>
+        <option value="ja">일본어</option>
+        <option value="ch">중국어</option>
+    </select>
+    <button onclick="get_list()">조회</button>
+    <div id="result">
+
+    </div>
+</body>
+</html>
+<script>
+    const select = document.getElementById('language');
+
+    function get_list(){
+        fetch(`/get_list?language=${select.value}`)
+            .then((response)=>{
+            console.log(select.value)
+            console.log('실행')
+            return response.json();
+        }).then((result)=>{
+            // console.log(result)
+            db_insert(result);
+        }).catch(e => console.log("error: ", e))
+    }
+
+    function db_insert(resultList) {
+        console.log("db_insert실행")
+        const createDiv = document.getElementById("result");
+        createDiv.innerHTML = '';
+        let language;
+        switch (select.value){
+            case "en":
+                language = "영어"
+                break;
+            case "ja":
+                language = "일본어"
+                break;
+            case "ch":
+                language = "중국어"
+                break;
+
+        }
+
+        for(let i = 0; i < resultList.length; i++){
+            if(resultList[i].PSB_FRN.split(' ').filter(x => x === language).length === 1){
+                createDiv.insertAdjacentHTML(`beforeend`, `<div>${resultList[i].BZ_NM} / ${resultList[i].GNG_CS} / ${resultList[i].PSB_FRN}</div>`)
+            }
+        }
+    }
+
+</script>
